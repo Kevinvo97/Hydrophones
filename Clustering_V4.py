@@ -30,8 +30,8 @@ Hitsrange = [0,1]       # Size of Timeslice
 
 # Hydrophone Locations #
 LocID = 2   # [0 = Random, 2 = Evenly Spaced + Clusters]
-Nxi = [4]#[1,2,3,4,5,6,7,8,9,10]#np.ones(200,dtype=int)#[4]          # Same length as Nyi, Nzi
-Nyi = [4]#[1,2,3,4,5,6,7,8,9,10]#np.ones(200,dtype=int)#[4]           # Same length as Nxi, Nzi
+Nxi = [5]#[1,2,3,4,5,6,7,8,9,10]#np.ones(200,dtype=int)#[4]          # Same length as Nyi, Nzi
+Nyi = [5]#[1,2,3,4,5,6,7,8,9,10]#np.ones(200,dtype=int)#[4]           # Same length as Nxi, Nzi
 Nzi = [5]#[5,5,5,5,5,5,5,5,5,5]#np.linspace(1,200,200,dtype=int)#[5]#[5,5,5,5,5]#,12,16,18]#,8,10,12,14,16]#,12,14,16]  # Amount of Hydrophones in z-direction, sqrt(N/Nz) needs to be an integer!! (e.g. 100,4) or needs to be 25
 Nxyi = np.multiply(Nxi, Nyi)
 Cluster_Size = 1  # Amount of Hydrophones at a z-location
@@ -43,7 +43,7 @@ yrange = [-500,500]   # YLoc range in meters
 zrange = [-500,500]   # ZLoc range in meters
 
 # False Hits + Amplitudes #
-TotalHitsInit = [1,2,3,4,5,6,7,8,9,10]#[5,10,20,30,40,60,80,100,120,160]   # 5 per 10 seconds
+TotalHitsInit = [1,2,3,4,5,6,7,8,9,10,12,16,20]#11,12,13,14,15,16,17,18,19,20]#[5,10,20,30,40,60,80,100,120,160]   # 5 per 10 seconds
 Amprange = [4,10]      # dB range of hits (Check whether assumed values are correct!!)
 Source_Amp = 20        # Amplitude of Source
 
@@ -54,7 +54,7 @@ Source_Z = 0
 Source_Loc = [Source_X, Source_Y, Source_Z]
 ThetaX = (30/180) * np.pi     # Incoming angle neutrino in radians
 ThetaY = (30/180) * np.pi     # Incoming angle neutrino in radians
-PanDepth = 10000                # Depth of Pancake in m
+PanDepth = 100                # Depth of Pancake in m
 
 # Physical Constants & Parameters #
 Vsound = 1.5e3  # Sound velocity in water in m/s
@@ -412,6 +412,8 @@ False_Events = np.zeros([len(Ni), len(TotalHitsInit), runs])
 Correct_Percentage = np.zeros([len(Ni),len(TotalHitsInit)])
 Events_Detected = np.zeros([len(Ni), len(TotalHitsInit), runs])
 Average_Events_Detected = np.zeros([len(Ni),len(TotalHitsInit)])
+Average_Hits_Per_Run_Event = np.zeros([len(Ni), len(TotalHitsInit), runs])
+Average_Hits_Event = np.zeros([len(Ni),len(TotalHitsInit)])
 for i in range(len(Ni)):     # First Loop over amount of Hydrophones
     N = Ni[i]
     Nx = Nxi[i]
@@ -442,7 +444,7 @@ for i in range(len(Ni)):     # First Loop over amount of Hydrophones
             HDictAppender(Hitsrange, TotalHits, Hydrophones, Amprange, N)
             #Hydrophones, Appended_Phones, Appended_Pulses = HPulseAppender(Hydrophones, Time_Pulse, LocZH, Source_Z, PanDepth)
             # Can add more neutrino pulses!
-            #Hydrophones, Appended_Phones2, Appended_Pulses2 = HPulseAppender(Hydrophones, Time_Pulse+0.5, LocZH, Source_Z, PanDepth)
+            #Hydrophones, Appended_Phonesx2, Appended_Pulses2 = HPulseAppender(Hydrophones, Time_Pulse+0.5, LocZH, Source_Z, PanDepth)
             
             # Sorting + Rotation of Hit Locs #
             Hits, LocX, LocY, LocZ, LocH = HHitSorter(Hydrophones, N)
@@ -450,17 +452,32 @@ for i in range(len(Ni)):     # First Loop over amount of Hydrophones
             LocX, LocZ = HRotateY(LocX, LocY, LocZ, ThetaY)
             
             # Pancake + Causality Algorithm #
-            Nmin = int(N/11)  # !!Make some function of Hydrophone density!!
+            Nmin = int(29)  # !!Make some function of Hydrophone density!!
             Event_Log = HEvent(Hits, LocX, LocY, LocZ, LocH, Nmin, PanDepth)
             Event_Log = HSortEventLog(Event_Log)
             
             # Merger Algorithm # !! Check whether correctly applied !!
             Event_Log_Buffer = copy.deepcopy(Event_Log)
-            Events_Detected[i,p,run] = len(Event_Log_Buffer)
-            #Event_Log_Buffer, Event_Merge_Count = HEventMerger(Event_Log_Buffer)
             
             # Events_Detected[i,p,run] = len(Event_Log_Buffer)
+            # Hits_Per_Event = []
+            # for ilog in Event_Log_Buffer:
+            #     Hits_Per_Event = np.append(Hits_Per_Event,len(Event_Log_Buffer[ilog]['H']))
+                
+            # if len(Event_Log_Buffer) != 0:
+            #     Average_Hits_Per_Run_Event[i,p,run] = sum(Hits_Per_Event)/len(Event_Log_Buffer)
+                
+            Event_Log_Buffer, Event_Merge_Count = HEventMerger(Event_Log_Buffer)
             
+            Events_Detected[i,p,run] = len(Event_Log_Buffer)
+            Hits_Per_Event = []
+            for ilog in Event_Log_Buffer:
+                Hits_Per_Event = np.append(Hits_Per_Event,len(Event_Log_Buffer[ilog]['H']))
+                
+            if len(Event_Log_Buffer) != 0:
+                Average_Hits_Per_Run_Event[i,p,run] = sum(Hits_Per_Event)/len(Event_Log_Buffer)
+        
+        Average_Hits_Event[i,p] = sum(Average_Hits_Per_Run_Event[i,p])/runs
         Average_Events_Detected[i,p] = sum(Events_Detected[i,p])/runs
         et = time.time()
         time_elapsed = et - st
@@ -477,12 +494,38 @@ plt.plot(Ni, Average_Events_Detected[:,0])
 plt.title('Average Events Detected as a function of N, runs = ' + str(runs) + ' FHits = ' + str(TotalHits) + '\n' + 'VSound = ' + str(Vsound) + ' m/s')
 plt.ylabel('Number of Events Detected')
 plt.xlabel('Number of Hydrophones (Nz = 5, Nx = Ny)')
-#plt.xlabel('Number of Hydrophones (Random Locs)')           
+#plt.xlabel('Number of Hydrophones (Random Locs)')       
 
 plt.figure()
 plt.plot(TotalHitsInit, Average_Events_Detected[0,:])
 plt.title('Average Events Detected as a function of False Hits, runs = ' + str(runs) + ', N = ' + str(N) + '\n' + 'VSound = ' + str(Vsound) + ' m/s')
 plt.ylabel('Average Number of Events Detected')
 plt.xlabel('Number of False Hits per Hydrophone')
-#plt.xlabel('Number of Hydrophones (Random Locs)')           
-     
+#plt.xlabel('Number of Hydrophones (Random Locs)')  
+
+plt.figure()
+plt.loglog(TotalHitsInit, Average_Events_Detected[0,:])
+plt.title('Average Events Detected as a function of False Hits, runs = ' + str(runs) + ', N = ' + str(N) + '\n' + 'VSound = ' + str(Vsound) + ' m/s')
+plt.ylabel('Average Number of Events Detected')
+plt.xlabel('Number of False Hits per Hydrophone')   
+
+plt.figure()
+plt.plot(TotalHitsInit, Average_Hits_Event[0,:])
+plt.title('Average Hits per Event as a function of False Hits, runs = ' + str(runs) + ', N = ' + str(N) + '\n' + 'VSound = ' + str(Vsound) + ' m/s')
+plt.ylabel('Average Number of Hits per Event')
+plt.xlabel('Number of False Hits per Hydrophone')   
+
+#%%
+ALocX = []
+ALocY = []
+ALocZ = []
+for i in range(len(Appended_Phones)):
+    num = Appended_Phones[i]
+    ALocX = np.append(ALocX, Hydrophones[num]['X'])
+    ALocY = np.append(ALocY, Hydrophones[num]['Y'])
+    ALocZ = np.append(ALocZ, Hydrophones[num]['Z'])
+
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+ax.scatter3D(ALocX, ALocY, ALocZ)
+
