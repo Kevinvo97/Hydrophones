@@ -43,7 +43,7 @@ yrange = [-500,500]   # YLoc range in meters
 zrange = [-500,500]   # ZLoc range in meters
 
 # False Hits + Amplitudes #
-TotalHitsInit = [1,2,3,4,5,6,7,8,9,10,12,16,20]#11,12,13,14,15,16,17,18,19,20]#[5,10,20,30,40,60,80,100,120,160]   # 5 per 10 seconds
+TotalHitsInit = [16,20]#[1,2,3,4,5,6,7,8,9,10,12,16,20]#11,12,13,14,15,16,17,18,19,20]#[5,10,20,30,40,60,80,100,120,160]   # 5 per 10 seconds
 Amprange = [4,10]      # dB range of hits (Check whether assumed values are correct!!)
 Source_Amp = 20        # Amplitude of Source
 
@@ -452,7 +452,7 @@ for i in range(len(Ni)):     # First Loop over amount of Hydrophones
             LocX, LocZ = HRotateY(LocX, LocY, LocZ, ThetaY)
             
             # Pancake + Causality Algorithm #
-            Nmin = int(29)  # !!Make some function of Hydrophone density!!
+            Nmin = int(34)  # !!Make some function of Hydrophone density!!
             Event_Log = HEvent(Hits, LocX, LocY, LocZ, LocH, Nmin, PanDepth)
             Event_Log = HSortEventLog(Event_Log)
             
