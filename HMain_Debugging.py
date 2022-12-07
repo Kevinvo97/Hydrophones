@@ -49,7 +49,7 @@ yrange = [-500,500]   # YLoc range in meters
 zrange = [-500,500]   # ZLoc range in meters
 
 # False Hits + Amplitudes #
-TotalHitsInit = [2]#[1,2,3,4,5,6,7,8,9,10,12,16,20]#11,12,13,14,15,16,17,18,19,20]#[5,10,20,30,40,60,80,100,120,160]   # 5 per 10 seconds
+TotalHitsInit = [4]#[1,2,3,4,5,6,7,8,9,10,12,16,20]#11,12,13,14,15,16,17,18,19,20]#[5,10,20,30,40,60,80,100,120,160]   # 5 per 10 seconds
 Amprange = [4,10]      # dB range of hits (Check whether assumed values are correct!!)
 Source_Amp = 20        # Amplitude of Source
 
@@ -62,9 +62,9 @@ ThetaX = (30/180) * np.pi     # Incoming angle neutrino in radians
 ThetaY = (30/180) * np.pi     # Incoming angle neutrino in radians
 
 # Pancake Size and Nmin Value for Event + Clique #
-PanDepth = 100                # Depth of Pancake in m
+PanDepth = 50                # Depth of Pancake in m
 TravelDist = 500              # Maximum detectable Distance from Source
-Nmin = int(32)                # !!Make some function of Hydrophone density!!
+Nmin = int(46)                # !!Make some function of Hydrophone density!!
 Max_Dist_Match = 420          # Max_Dist_Match/2 is max distance travelled in both directions  [9,9,9] = 608.25 m [10,10,10] = 596.225 m
 
 # Physical Constants & Parameters #
@@ -138,26 +138,30 @@ for i in range(len(Ni)):     # First Loop over amount of Hydrophones
                 
             Event_Log_Buffer, Event_Merge_Count = HEventMerger.HEventMerger(Event_Log_Buffer)
            
-            Duplicate_Log = np.zeros(len(Event_Log_Buffer[0].Hits))
-            for j1 in range(len(Event_Log_Buffer[0].Hits)):
-                for j2 in range(j1+1, len(Event_Log_Buffer[0].Hits)):
-                    if Event_Log_Buffer[0].Hits[j1].Hydrophone.ID == Event_Log_Buffer[0].Hits[j2].Hydrophone.ID and Event_Log_Buffer[0].Hits[j1].Time == Event_Log_Buffer[0].Hits[j2].Time:
-                        Duplicate_Log[j2] +=1
-                 
-            Event_Log_Buffer_Keep = []
-            Hits_Temp = []
-            for j3 in range(len(Duplicate_Log)):
-                if Duplicate_Log[j3] == 0:
-                    Hits_Temp.append(Event_Log_Buffer[0].Hits[j3])
-                    
-            Event_Log_Buffer_Keep.append(HClasses.Event(Hits_Temp))
-            
             NuCount = 0
-            for itype in range(len(Event_Log_Buffer_Keep[0].Hits)):
-                if Event_Log_Buffer_Keep[0].Hits[itype].Type == 14:
-                    NuCount +=1
+            EventCount = 0
+            if len(Event_Log_Buffer) != 0:
+                Duplicate_Log = np.zeros(len(Event_Log_Buffer[0].Hits))
+                for j1 in range(len(Event_Log_Buffer[0].Hits)):
+                    for j2 in range(j1+1, len(Event_Log_Buffer[0].Hits)):
+                        if Event_Log_Buffer[0].Hits[j1].Hydrophone.ID == Event_Log_Buffer[0].Hits[j2].Hydrophone.ID and Event_Log_Buffer[0].Hits[j1].Time == Event_Log_Buffer[0].Hits[j2].Time:
+                            Duplicate_Log[j2] +=1
+                 
+                    Event_Log_Buffer_Keep = []
+                    Hits_Temp = []
+                    for j3 in range(len(Duplicate_Log)):
+                        if Duplicate_Log[j3] == 0:
+                            Hits_Temp.append(Event_Log_Buffer[0].Hits[j3])
+                    
+                    Event_Log_Buffer_Keep.append(HClasses.Event(Hits_Temp))
+            
+                
+                for itype in range(len(Event_Log_Buffer_Keep[0].Hits)):
+                    if Event_Log_Buffer_Keep[0].Hits[itype].Type == 14:
+                        NuCount +=1
+                EventCount = len(Event_Log_Buffer_Keep[0].Hits)
             print('NuCount Equals ' + str(NuCount))
-            print('Event Has ' + str(len(Event_Log_Buffer_Keep[0].Hits)) + ' Hits')
+            print('Event Has ' + str(EventCount) + ' Hits')
                     # Event_Log_Buffer_Keep.append(HClasses.Event_Log_Buffer[0].Hits[j3])
             # Hits_Twice = Event_Log_Buffer[0].Hits
             # Event_Log_Twice, Buff_Check_Twice = HEvent.HEvent(Hits_Twice, Nmin, PanDepth, Vsound, Max_Dist_Match, TravelDist)
