@@ -324,10 +324,10 @@ for i in range(1,31):
     t_loop = t_sel
     evt_loop = evt_sel
 
-fittie = get_homebrew_fit_loop()
-t_sel = fittie (evt, t_loop)
-# evt_sel = select_hits( t_loop, evt_loop, 0.01 )
-# t_sel = fit (evt_sel)
+# fittie = get_homebrew_fit_loop()
+# t_sel = fittie (evt, t_loop)
+evt_sel = select_hits( t_loop, evt_loop, 0.01 )
+t_sel = fit (evt_sel)
 
 NuCounter_sel = NuCount ( evt_sel )
 
