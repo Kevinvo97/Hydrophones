@@ -4,39 +4,42 @@ Created on Mon Nov 28 12:36:34 2022
 
 @author: oerskqpv
 """
+from dataclasses import dataclass
 
 ##################----------- Classes -----------##################
+@dataclass
 class Hydrophone:
-    def __init__(self, ID, IDLoc, X, Y, Z):#, Hits):
-        self.ID = ID
-        self.IDLoc = IDLoc
-        self.X = X
-        self.Y = Y
-        self.Z = Z
-        #self.Hits = Hits
+    ID: int
+    IDLoc: int 
+    X: float
+    Y float 
+    Z: float
+    #Hits: int
 
+@dataclass
 class Hit:
-    def __init__(self, Hydrophone, Time, Amplitude, Type):
-        self.Hydrophone = Hydrophone
-        self.Time = Time
-        self.Amplitude = Amplitude
-        self.Type = Type         # 14 = nu, -1 = noise
-        
+    Hydrophone: float
+    Time: float
+    Amplitude: float
+    Type: int         # 14 = nu, -1 = noise
+
+@dataclass
 class Event:
-    def __init__(self, Hits):
-        self.Hits = Hits
-        
+    Hits: int
+    
+    # by calling Event.Hits it automatically prints this, so not needed
+
     # def ShowHits(self):   # !! Fix This, Nice Debugging Feature! !!
     #     Times = np.zeros(len(self.Hits))
     #     for i in range(len(self.Hits)):
     #         Times[i] = self.Hits[i].Time
     #     return "{}".format(Times)
 
+@dataclass
 class Source:
-    def __init__(self, X, Y, Z):
-        self.X = X
-        self.Y = Y
-        self.Z = Z
+    X: float
+    Y: float
+    Z: float
         
 def main():
     pass

@@ -8,20 +8,22 @@ import numpy as np
 import math
 import HClasses
 
+# these functions looks very similar to HTimeDiff in HEvent.py. Instead of classes you call, it might be much faster to create 1 nested array that you substract and square, then divide d 
 def HDistSource(Hydrophones, Sources, Vsound, N):
-    # This function calculates the distance and time to the source from a Hydrophone
-    Dist = np.zeros(N)
-    Time_Pulse = np.zeros(N)
+    """Calculate the distance and time to the source from a Hydrophone."""
+    Dist = np.zeros(N, dtype=float)
     for i in range(N):
-        Dist[i] = math.sqrt((Hydrophones[i].X - Sources[0].X)**2 + \
-                            (Hydrophones[i].Y - Sources[0].Y)**2 + \
-                                (Hydrophones[i].Z - Sources[0].Z)**2)
-        Time_Pulse[i] =  Dist[i] / Vsound
+        Dist[i] = np.sqrt(
+                (Hydrophones[i].X - Sources[0].X)**2 + \
+                (Hydrophones[i].Y - Sources[0].Y)**2 + \
+                (Hydrophones[i].Z - Sources[0].Z)**2
+                )
+    Time_Pulse =  Dist / Vsound
         
     return Dist, Time_Pulse
 
 def HPulseAppender(Hydrophones, Hits, N, Sources, PanDepth, Vsound, TravelDist, Offset):
-    # This function adds the time of the pulse to the Hits of the Hydrophone dict
+    """Add the time of the pulse to the Hits of the Hydrophone dict."""
     Appended_Phones = []
     Appended_Pulses = []
     Distance = []

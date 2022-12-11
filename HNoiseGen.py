@@ -8,7 +8,7 @@ import numpy as np
 import HClasses
 
 def HHitAppender(Hitsrange, TotalHits, Hydrophones, Amprange, N):
-    # This function adds random False Hits + Amplitudes to the Hydrophones dict
+    """Add random False Hits + Amplitudes to the Hydrophones dict."""
     Hits = []
     for Hnum in range(N):
         Hits_Temp = np.sort(np.random.uniform(Hitsrange[0], Hitsrange[1],TotalHits))
