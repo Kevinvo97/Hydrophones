@@ -7,20 +7,22 @@ Created on Mon Nov 28 15:31:59 2022
 import numpy as np
 
 def HSortEventLog(Event_Log):
-    # This function sorts all the data according to ascending order of the hits
+    """Sort all the data according to ascending order of the hits"""
     for isort in range(len(Event_Log)):
         Temp_Hits = np.zeros(len(Event_Log[isort].Hits))
         for jsort in range(len(Event_Log[isort].Hits)):
             Temp_Hits[jsort] = Event_Log[isort].Hits[jsort].Time
             
         TempHitsInd = Temp_Hits.argsort()
-        Temp_Hits = Temp_Hits[TempHitsInd[::1]]
+        Temp_Hits = Temp_Hits[TempHitsInd[::1]]  # you don't return this, so this has no effect
         Event_Log[isort].Hits = [Event_Log[isort].Hits[i] for i in TempHitsInd]
         
     return Event_Log
 
 def HEventMerger(Event_Log_Buffer):
-    # This function merges events which have overlap (e.g tb1<=tb2<te1)
+    """Merge events which have overlap (e.g tb1<=tb2<te1)."""
+    
+    ### Gebruik van enumerate hier is veel eleganter!!!
     
     Event_Merge_Count = np.zeros(len(Event_Log_Buffer))
     if len(Event_Log_Buffer) == 0:
@@ -49,8 +51,8 @@ def HEventMerger(Event_Log_Buffer):
                     Event_Log_Buffer[imerg1].Hits = [Event_Log_Buffer[imerg1].Hits[i] for i in TempHitsInd]
                     
     Event_Log_Keep = []
-    for ikeep in range(len(Event_Merge_Count)):
-        if Event_Merge_Count[ikeep] == 0:
+    for ikeep, count in enumerate(Event_Merge_Count):
+        if count == 0:
             Event_Log_Keep.append(Event_Log_Buffer[ikeep]) 
     
     return Event_Log_Keep, Event_Merge_Count

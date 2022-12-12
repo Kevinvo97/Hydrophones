@@ -8,10 +8,7 @@ import numpy as np
 import copy
 
 def HHitSorter(Hits):
-    Temp_Hits = np.zeros(len(Hits))
-    for i in range(len(Hits)):
-        Temp_Hits[i] = Hits[i].Time
-        
+    Temp_Hits = np.array([hit.Time for hit in Hits))
     TempHitsInd = Temp_Hits.argsort()
     Temp_Hits = Temp_Hits[TempHitsInd[::1]]
     Hits = [Hits[i] for i in TempHitsInd]
@@ -19,34 +16,30 @@ def HHitSorter(Hits):
     return Hits, Temp_Hits
 
 def HRotateX(Hydrophones, ThetaX):
-    # This function rotates around the x-axis
-    for irx in range(len(Hydrophones)):
-        Y1 = Hydrophones[irx].Y * np.cos(ThetaX)
-        Y2 = -Hydrophones[irx].Z * np.sin(ThetaX)
-        LocYY = Y1 + Y2    # Check These Formulas
+    """Rotate around the x-axis."""
+    for phone in Hydrophones:
+        Y1 = phone.Y * np.cos(ThetaX)
+        Y2 = -phone.Z * np.sin(ThetaX)
     
-        Z1 = Hydrophones[irx].Y * np.sin(ThetaX)
-        Z2 = Hydrophones[irx].Z * np.cos(ThetaX)
-        LocZZ = Z1 + Z2
+        Z1 = phone.Y * np.sin(ThetaX)
+        Z2 = phone.Z * np.cos(ThetaX)
         
-        Hydrophones[irx].Y = LocYY
-        Hydrophones[irx].Z = LocZZ
+        phone.Y = Y1+Y2  # check this formula
+        phone.Z = Z1+Z2
     
     return Hydrophones
 
 def HRotateY(Hydrophones, ThetaY):
-    # This function rotates around the y-axis
-    for iry in range(len(Hydrophones)):
-        X1 = Hydrophones[iry].X * np.cos(ThetaY)
-        X2 = Hydrophones[iry].Z * np.sin(ThetaY)
-        LocXX = X1 + X2
+    """Rotate around the y-axis."""
+    for phone in Hydrophones:
+        X1 = phone.X * np.cos(ThetaY)
+        X2 = phone.Z * np.sin(ThetaY)
     
-        Z1 = -Hydrophones[iry].X * np.sin(ThetaY)
-        Z2 = Hydrophones[iry].Z * np.cos(ThetaY)
-        LocZZ = Z1 + Z2
+        Z1 = -phone.X * np.sin(ThetaY)
+        Z2 = phone.Z * np.cos(ThetaY)
         
-        Hydrophones[iry].X = LocXX
-        Hydrophones[iry].Z = LocZZ
+        phone.X = X1+X2
+        phone.Z = Z1+Z2
     
     return Hydrophones
 
